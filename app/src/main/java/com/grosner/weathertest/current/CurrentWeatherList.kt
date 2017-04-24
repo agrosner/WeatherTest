@@ -71,8 +71,7 @@ class CurrentWeatherItemHolder(ctx: ViewGroup)
     }
 }
 
-class CurrentWeatherAdapter : BaseRecyclerViewAdapter<ForecastViewModel, CurrentWeatherItemHolder,
-        CurrentWeatherListComponent>() {
+class CurrentWeatherAdapter : BaseRecyclerViewAdapter<ForecastViewModel, CurrentWeatherItemHolder>() {
 
     override fun onCreateItemViewHolder(parent: ViewGroup, viewType: Int) = CurrentWeatherItemHolder(parent)
 
