@@ -1,6 +1,6 @@
 package com.grosner.weathertest.utils
 
-import com.andrewgrosner.okbinding.bindings.BindingConverter
-import com.andrewgrosner.okbinding.bindings.on
+import com.andrewgrosner.kbinding.bindings.BindingConverter
+import com.andrewgrosner.kbinding.bindings.on
 
-fun <TBinding : BindingConverter<Double>> TBinding.forTemp() = on { "${it.toInt()}°" }
+fun <Data, TBinding : BindingConverter<Data, Double>> TBinding.forTemp() = on { "${it?.toInt() ?: "-"}°" }

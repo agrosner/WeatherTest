@@ -3,9 +3,8 @@ package com.grosner.weathertest.current
 import android.support.v7.widget.LinearLayoutManager
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import com.andrewgrosner.okbinding.BindingComponent
-import com.andrewgrosner.okbinding.bindings.bind
-import com.andrewgrosner.okbinding.bindings.onSelf
+import com.andrewgrosner.kbinding.anko.BindingComponent
+import com.andrewgrosner.kbinding.bindings.onSelf
 import com.fuzz.android.mvvm_lite.ListViewModel
 import com.grosner.weathertest.R
 import com.grosner.weathertest.base.widget.ItemSpacingDecoration
@@ -29,13 +28,15 @@ class CurrentWeatherComponent(viewModel: CurrentWeatherViewModel)
             addItemDecoration(ItemSpacingDecoration(dip(2), 0))
 
             // bind data to header
-            oneWay(bind(viewModel.todayWeather).onSelf().toView(this) { recyclerView, dayWeatherViewModel ->
-                val adapter = recyclerView.adapter as CurrentWeatherAdapter
-                (adapter.headerHolders[0] as TodayWeatherHolder).bind(dayWeatherViewModel)
-            })
+            bind { it.todayWeather }.onSelf().toView(this) { recyclerView, vm ->
+                vm?.let { vm ->
+                    val adapter = recyclerView.adapter as CurrentWeatherAdapter
+                    (adapter.headerHolders[0] as TodayWeatherHolder).bind(vm)
+                }
+            }
 
             // bind collection changes to adapter
-            viewModel.days.registerCollectionChangeEvent {
+            viewModel?.days?.registerCollectionChangeEvent {
                 val adapter = this.adapter as CurrentWeatherAdapter
                 if (it.op == ListViewModel.Change.Op.SET) {
                     adapter.setItemsList(it.listViewModel.model)

@@ -23,6 +23,7 @@ android {
 }
 
 def anko_version = '0.9.1'
+def kbinding_version = '519cd8b33f'
 
 dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -38,7 +39,9 @@ dependencies {
     compile "org.jetbrains.anko:anko-appcompat-v7:${anko_version}"
     compile "org.jetbrains.anko:anko-design:${anko_version}"
     compile "org.jetbrains.anko:anko-recyclerview-v7:${anko_version}"
-    compile 'com.github.agrosner:KBinding:1.0.0-beta1' // version of KBinding
+
+    compile "com.github.agrosner.KBinding:kbinding:${kbinding_version}" // version of KBinding
+    compile "com.github.agrosner.KBinding:kbinding-anko:${kbinding_version}"
 
     compile 'com.google.dagger:dagger:2.10'
     kapt 'com.google.dagger:dagger-compiler:2.10'

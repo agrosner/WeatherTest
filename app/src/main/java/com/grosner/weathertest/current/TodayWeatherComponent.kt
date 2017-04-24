@@ -5,13 +5,11 @@ import android.view.Gravity.TOP
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.ImageView
-import android.widget.TextView
-import com.andrewgrosner.okbinding.BindingHolder
-import com.andrewgrosner.okbinding.bindings.bind
-import com.andrewgrosner.okbinding.bindings.onSelf
-import com.andrewgrosner.okbinding.bindings.toText
-import com.andrewgrosner.okbinding.viewextensions.color
+import com.andrewgrosner.kbinding.BindingRegister
+import com.andrewgrosner.kbinding.anko.BindingComponent
+import com.andrewgrosner.kbinding.bindings.onSelf
+import com.andrewgrosner.kbinding.bindings.toText
+import com.andrewgrosner.kbinding.viewextensions.color
 import com.grosner.weathertest.R
 import com.grosner.weathertest.base.widget.BaseViewHolder
 import com.grosner.weathertest.current.today.DayWeatherViewModel
@@ -19,9 +17,9 @@ import com.grosner.weathertest.utils.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.linearLayoutCompat
 
-class TodayWeatherComponent : AnkoComponent<ViewGroup> {
+class TodayWeatherComponent : BindingComponent<ViewGroup, DayWeatherViewModel>() {
 
-    override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
+    override fun createViewWithBindings(ui: AnkoContext<ViewGroup>) = with(ui) {
         relativeLayout {
             padding = dip(12)
             backgroundColor = color(R.color.colorPrimary)
@@ -45,6 +43,7 @@ class TodayWeatherComponent : AnkoComponent<ViewGroup> {
                         id = R.id.tempHigh
                         textSize = textLarge
                         font = antonFont
+                        bind(DayWeatherViewModel::tempMax) { it.tempMax }.forTemp().toText(this)
                     }.lparams {
                         marginStart = dip(16)
                         gravity = BOTTOM
@@ -52,6 +51,7 @@ class TodayWeatherComponent : AnkoComponent<ViewGroup> {
                     textView {
                         id = R.id.day
                         textSize = textLarge
+                        bind(DayWeatherViewModel::date) { it.date }.onSelf().toText(this)
                     }.lparams {
                         marginStart = dip(24)
                         gravity = BOTTOM
@@ -69,6 +69,7 @@ class TodayWeatherComponent : AnkoComponent<ViewGroup> {
                         textSize = textLarge
                         font = antonFont
                         textColor = color(R.color.secondaryTextColor)
+                        bind(DayWeatherViewModel::tempMin) { it.tempMin }.forTemp().toText(this)
                     }.lparams {
                         marginStart = dip(16)
                         gravity = TOP
@@ -76,6 +77,7 @@ class TodayWeatherComponent : AnkoComponent<ViewGroup> {
                     textView {
                         id = R.id.time
                         textSize = textLarge
+                        bind(DayWeatherViewModel::time) { it.time }.onSelf().toText(this)
                     }.lparams {
                         marginStart = dip(24)
                         gravity = TOP
@@ -93,6 +95,8 @@ class TodayWeatherComponent : AnkoComponent<ViewGroup> {
                 id = R.id.currentTemp
                 textSize = textHuge
                 font = antonFont
+                bind(DayWeatherViewModel::temperature) { it.temperature }.forTemp().toText(this)
+
             }.lparams {
                 below(R.id.image)
                 topMargin = dip(16)
@@ -101,10 +105,13 @@ class TodayWeatherComponent : AnkoComponent<ViewGroup> {
                 textView {
                     id = R.id.location
                     textSize = textLarge
+                    bind(DayWeatherViewModel::location) { it.location }.onSelf().toText(this)
                 }
                 textView {
                     id = R.id.description
                     textSize = textMedium
+                    bind(DayWeatherViewModel::description) { it.description }.onSelf().toText(this)
+
                 }
             }.lparams {
                 width = MATCH_PARENT
@@ -120,27 +127,9 @@ class TodayWeatherComponent : AnkoComponent<ViewGroup> {
 }
 
 class TodayWeatherHolder(parent: ViewGroup)
-    : BaseViewHolder<TodayWeatherComponent, DayWeatherViewModel>(parent, TodayWeatherComponent()) {
+    : BaseViewHolder<DayWeatherViewModel>(parent, TodayWeatherComponent()) {
 
-    val day = itemView.find<TextView>(R.id.day)
-    val time = itemView.find<TextView>(R.id.time)
-    val currentTemp = itemView.find<TextView>(R.id.currentTemp)
-    val image = itemView.find<ImageView>(R.id.image)
-    val location = itemView.find<TextView>(R.id.location)
-    val description = itemView.find<TextView>(R.id.description)
-    val tempHigh = itemView.find<TextView>(R.id.tempHigh)
-    val tempLow = itemView.find<TextView>(R.id.tempLow)
-
-    override fun applyBindings(data: DayWeatherViewModel, holder: BindingHolder<DayWeatherViewModel>) {
-        holder.apply {
-            oneWay(data::date, bind { data.date }.onSelf().toText(day))
-            oneWay(data::temperature, bind { data.temperature }
-                    .forTemp().toText(currentTemp))
-            oneWay(data::location, bind { data.location }.onSelf().toText(location))
-            oneWay(data::description, bind { data.description }.onSelf().toText(description))
-            oneWay(data::tempMax, bind { data.tempMax }.forTemp().toText(tempHigh))
-            oneWay(data::tempMin, bind { data.tempMin }.forTemp().toText(tempLow))
-            oneWay(data::time, bind { data.time }.onSelf().toText(time))
-        }
+    override fun applyBindings(data: DayWeatherViewModel, holder: BindingRegister<DayWeatherViewModel>) {
+        holder.viewModel = data
     }
 }

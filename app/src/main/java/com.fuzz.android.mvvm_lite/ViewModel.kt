@@ -1,7 +1,7 @@
 package com.fuzz.android.mvvm_lite
 
 import android.os.Bundle
-import com.andrewgrosner.okbinding.BaseObservable
+import com.andrewgrosner.kbinding.BaseObservable
 
 /**
  * Basic ViewModel construct. It has a small lifecycle that it adheres to.

@@ -5,12 +5,11 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.widget.TextView
-import com.andrewgrosner.okbinding.BindingHolder
-import com.andrewgrosner.okbinding.bindings.bind
-import com.andrewgrosner.okbinding.bindings.onSelf
-import com.andrewgrosner.okbinding.bindings.toText
-import com.andrewgrosner.okbinding.viewextensions.color
+import com.andrewgrosner.kbinding.BindingRegister
+import com.andrewgrosner.kbinding.anko.BindingComponent
+import com.andrewgrosner.kbinding.bindings.onSelf
+import com.andrewgrosner.kbinding.bindings.toText
+import com.andrewgrosner.kbinding.viewextensions.color
 import com.grosner.weathertest.R
 import com.grosner.weathertest.base.widget.BaseRecyclerViewAdapter
 import com.grosner.weathertest.base.widget.BaseViewHolder
@@ -19,8 +18,8 @@ import com.grosner.weathertest.utils.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.linearLayoutCompat
 
-class CurrentWeatherListComponent : AnkoComponent<ViewGroup> {
-    override fun createView(ui: AnkoContext<ViewGroup>) = with(ui) {
+class CurrentWeatherListComponent : BindingComponent<ViewGroup, ForecastViewModel>() {
+    override fun createViewWithBindings(ui: AnkoContext<ViewGroup>) = with(ui) {
         linearLayoutCompat {
             orientation = LinearLayoutCompat.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -35,11 +34,13 @@ class CurrentWeatherListComponent : AnkoComponent<ViewGroup> {
                 id = R.id.tempHigh
                 textSize = textLarger
                 font = antonFont
+                bind(ForecastViewModel::tempMax) { it.tempMax }.forTemp().toText(this)
             }
 
             textView {
                 id = R.id.day
                 textSize = textMediumSmall
+                bind(ForecastViewModel::day) { it.day }.onSelf().toText(this)
             }.lparams {
                 weight = 1.0f
                 marginStart = dip(16)
@@ -54,6 +55,7 @@ class CurrentWeatherListComponent : AnkoComponent<ViewGroup> {
                 id = R.id.tempLow
                 textSize = textLarge
                 font = antonFont
+                bind(ForecastViewModel::tempMin) { it.tempMin }.forTemp().toText(this)
             }.lparams {
                 marginStart = dip(16)
             }
@@ -62,16 +64,10 @@ class CurrentWeatherListComponent : AnkoComponent<ViewGroup> {
 }
 
 class CurrentWeatherItemHolder(ctx: ViewGroup)
-    : BaseViewHolder<CurrentWeatherListComponent, ForecastViewModel>(ctx, CurrentWeatherListComponent()) {
+    : BaseViewHolder<ForecastViewModel>(ctx, CurrentWeatherListComponent()) {
 
-    val day = itemView.find<TextView>(R.id.day)
-    val tempHigh = itemView.find<TextView>(R.id.tempHigh)
-    val tempLow = itemView.find<TextView>(R.id.tempLow)
-
-    override fun applyBindings(data: ForecastViewModel, holder: BindingHolder<ForecastViewModel>) {
-        holder.oneWay(data::day, bind { data.day }.onSelf().toText(day))
-        holder.oneWay(data::tempMax, bind { data.tempMax }.forTemp().toText(tempHigh))
-        holder.oneWay(data::tempMin, bind { data.tempMin }.forTemp().toText(tempLow))
+    override fun applyBindings(data: ForecastViewModel, holder: BindingRegister<ForecastViewModel>) {
+        holder.viewModel = data
     }
 }
 

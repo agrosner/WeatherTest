@@ -9,22 +9,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.grosner.weathertest.R
-import org.jetbrains.anko.AnkoComponent
 import java.util.*
 
-typealias OnItemClickListener<T> = (Int, T, BaseViewHolder<*, *>) -> Unit
-typealias OnHFItemClickListener = (Int, BaseViewHolder<*, *>) -> Unit
+typealias OnItemClickListener<T> = (Int, T, BaseViewHolder<*>) -> Unit
+typealias OnHFItemClickListener = (Int, BaseViewHolder<*>) -> Unit
 
 /**
  * Description: The base adapter that consolidates logic here.
  */
 @Suppress("unused")
-abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TModel>, Component
-: AnkoComponent<ViewGroup>> : RecyclerView.Adapter<BaseViewHolder<*, *>>() {
+abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<TModel>>
+    : RecyclerView.Adapter<BaseViewHolder<*>>() {
 
-    val headerHolders = ArrayList<BaseViewHolder<*, *>>()
+    val headerHolders = ArrayList<BaseViewHolder<*>>()
     private val headerLayoutIds = ArrayList<Int>()
-    val footerHolders = ArrayList<BaseViewHolder<*, *>>()
+    val footerHolders = ArrayList<BaseViewHolder<*>>()
     private val footerLayoutIds = ArrayList<Int>()
 
     private var mainHandler: Handler? = null
@@ -112,17 +111,17 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
     }
 
     fun addHeaderView(layoutResId: Int, parent: ViewGroup) {
-        addHeaderHolder(layoutResId, NoBindingViewHolder<AnkoComponent<ViewGroup>, Any>(inflateView(parent, layoutResId)))
+        addHeaderHolder(layoutResId, NoBindingViewHolder<Any>(inflateView(parent, layoutResId)))
     }
 
-    fun addHeaderHolder(layoutResId: Int, baseViewHolder: BaseViewHolder<*, *>) {
+    fun addHeaderHolder(layoutResId: Int, baseViewHolder: BaseViewHolder<*>) {
         preventReuseOfIdsFrom(footerLayoutIds, layoutResId, "footer")
         headerHolders.add(baseViewHolder)
         headerLayoutIds.add(layoutResId)
         notifyItemInserted(headersCount - 1)
     }
 
-    fun addFooterHolder(footerResId: Int, baseViewHolder: BaseViewHolder<*, *>) {
+    fun addFooterHolder(footerResId: Int, baseViewHolder: BaseViewHolder<*>) {
         preventReuseOfIdsFrom(headerLayoutIds, footerResId, "header")
         footerHolders.add(baseViewHolder)
         footerLayoutIds.add(footerResId)
@@ -130,7 +129,7 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
     }
 
     fun addFooterView(footerResId: Int, parent: ViewGroup) {
-        addFooterHolder(footerResId, NoBindingViewHolder<AnkoComponent<ViewGroup>, Any>(inflateView(parent, footerResId)))
+        addFooterHolder(footerResId, NoBindingViewHolder<Any>(inflateView(parent, footerResId)))
     }
 
     protected fun notifyItemsListAdded(location: Int, itemsCount: Int) = notifyItemRangeInserted(location, itemsCount)
@@ -149,8 +148,8 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
         mainHandler = null
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*, *> {
-        var viewHolder: BaseViewHolder<*, *>? = headerViewHolderForViewType(viewType)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+        var viewHolder: BaseViewHolder<*>? = headerViewHolderForViewType(viewType)
         if (viewHolder != null) {
             if (onHeaderClickListener != null) {
                 val finalViewHolder = viewHolder
@@ -188,7 +187,7 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
         return viewHolder
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*, *>, position: Int) {
+    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         if (position < headersCount) {
             onBindItemHeaderViewHolder(holder, position)
         } else if (position > footerStartIndex) {
@@ -264,13 +263,13 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
      */
     protected fun getViewType(position: Int) = 0
 
-    protected fun setItemClickListener(viewHolder: BaseViewHolder<*, *>, onClickListener: View.OnClickListener) {
+    protected fun setItemClickListener(viewHolder: BaseViewHolder<*>, onClickListener: View.OnClickListener) {
         viewHolder.itemView.setOnClickListener(onClickListener)
     }
 
-    protected fun onBindItemFooterViewHolder(holder: BaseViewHolder<*, *>, footerPosition: Int) {}
+    protected fun onBindItemFooterViewHolder(holder: BaseViewHolder<*>, footerPosition: Int) {}
 
-    protected fun onBindItemHeaderViewHolder(holder: BaseViewHolder<*, *>, headerPosition: Int) {}
+    protected fun onBindItemHeaderViewHolder(holder: BaseViewHolder<*>, headerPosition: Int) {}
 
     /**
      * Subclasses should implement this to create ViewHolders for the main set of items.
@@ -298,14 +297,14 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
 
     protected fun getRawPosition(itemPosition: Int) = itemPosition + headersCount
 
-    protected fun onItemPositionClicked(viewHolder: BaseViewHolder<*, *>, position: Int) {
+    protected fun onItemPositionClicked(viewHolder: BaseViewHolder<*>, position: Int) {
         val item = getItemOrNull(position)
         if (this.onItemClickListener != null && item != null) {
             this.onItemClickListener?.invoke(position, item, viewHolder)
         }
     }
 
-    private fun getViewHolderPosition(viewHolder: BaseViewHolder<*, *>): Int {
+    private fun getViewHolderPosition(viewHolder: BaseViewHolder<*>): Int {
         var position = viewHolder.adapterPosition
         // no contained recyclerview, but this might be part of a LinearLayout or BaseAdapter
         if (position == RecyclerView.NO_POSITION) {
@@ -320,7 +319,7 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
         return position
     }
 
-    private fun headerViewHolderForViewType(viewType: Int): BaseViewHolder<*, *>? {
+    private fun headerViewHolderForViewType(viewType: Int): BaseViewHolder<*>? {
         for (i in headerLayoutIds.indices) {
             val resId = headerLayoutIds[i]
             if (viewType == resId) {
@@ -330,7 +329,7 @@ abstract class BaseRecyclerViewAdapter<TModel, VH : BaseViewHolder<Component, TM
         return null
     }
 
-    private fun footerHolderForViewType(viewType: Int): BaseViewHolder<*, *>? {
+    private fun footerHolderForViewType(viewType: Int): BaseViewHolder<*>? {
         for (i in footerLayoutIds.indices) {
             val resId = footerLayoutIds[i]
             if (viewType == resId) {

@@ -1,6 +1,6 @@
 package com.grosner.weathertest.current
 
-import com.andrewgrosner.okbinding.observable
+import com.andrewgrosner.kbinding.observable
 import com.fuzz.android.mvvm_lite.ModelListViewModel
 import com.fuzz.android.mvvm_lite.ViewModel
 import com.grosner.weathertest.WeatherApp
