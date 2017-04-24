@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tag_position" type="id"/>
+    <item name="day" type="id"/>
+    <item name="description" type="id"/>
+    <item name="tempHigh" type="id"/>
+    <item name="tempLow" type="id"/>
+    <item name="currentTemp" type="id"/>
+    <item name="location" type="id"/>
+    <item name="dayStatsContainer" type="id"/>
+    <item name="todayHeader" type="id"/>
+</resources>
